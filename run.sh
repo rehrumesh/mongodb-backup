@@ -4,15 +4,28 @@ MONGODB_HOST=${MONGODB_PORT_27017_TCP_ADDR:-${MONGODB_HOST}}
 MONGODB_HOST=${MONGODB_PORT_1_27017_TCP_ADDR:-${MONGODB_HOST}}
 MONGODB_PORT=${MONGODB_PORT_27017_TCP_PORT:-${MONGODB_PORT}}
 MONGODB_PORT=${MONGODB_PORT_1_27017_TCP_PORT:-${MONGODB_PORT}}
+
+MONGODB_HOST_REMOTE=${MONGODB_PORT_27017_TCP_ADDR_REMOTE:-${MONGODB_HOST_REMOTE}}
+MONGODB_HOST_REMOTE=${MONGODB_PORT_1_27017_TCP_ADDR_REMOTE:-${MONGODB_HOST_REMOTE}}
+MONGODB_PORT_REMOTE=${MONGODB_PORT_27017_TCP_PORT_REMOTE:-${MONGODB_PORT_REMOTE}}
+MONGODB_PORT_REMOTE=${MONGODB_PORT_1_27017_TCP_PORT_REMOTE:-${MONGODB_PORT_REMOTE}}
+
 MONGODB_USER=${MONGODB_USER:-${MONGODB_ENV_MONGODB_USER}}
 MONGODB_PASS=${MONGODB_PASS:-${MONGODB_ENV_MONGODB_PASS}}
 
-[[ ( -z "${MONGODB_USER}" ) && ( -n "${MONGODB_PASS}" ) ]] && MONGODB_USER='admin'
+MONGODB_USER_REMOTE=${MONGODB_USER_REMOTE:-${MONGODB_ENV_MONGODB_USER_REMOTE}}
+MONGODB_PASS_REMOTE=${MONGODB_PASS_REMOTE:-${MONGODB_ENV_MONGODB_PASS_REMOTE}}
 
+[[ ( -z "${MONGODB_USER}" ) && ( -n "${MONGODB_PASS}" ) ]] && MONGODB_USER='admin'
 [[ ( -n "${MONGODB_USER}" ) ]] && USER_STR=" --username ${MONGODB_USER}"
 [[ ( -n "${MONGODB_PASS}" ) ]] && PASS_STR=" --password ${MONGODB_PASS}"
 [[ ( -n "${MONGODB_DB}" ) ]] && DB_STR=" --db ${MONGODB_DB}"
-BACKUP_CMD="mongodump --out /backup/"'${BACKUP_NAME}'" --host ${MONGODB_HOST} --port ${MONGODB_PORT} ${USER_STR}${PASS_STR}${DB_STR} ${EXTRA_OPTS}"
+
+[[ ( -z "${MONGODB_USER_REMOTE}" ) && ( -n "${MONGODB_PASS_REMOTE}" ) ]] && MONGODB_USER_REMOTE='admin'
+[[ ( -n "${MONGODB_USER_REMOTE}" ) ]] && USER_STR_REMOTE=" --username ${MONGODB_USER_REMOTE}"
+[[ ( -n "${MONGODB_PASS_REMOTE}" ) ]] && PASS_STR_REMOTE=" --password ${MONGODB_PASS_REMOTE}"
+
+BACKUP_CMD="mongodump --out /backup/"'${BACKUP_NAME}'" --host ${MONGODB_HOST} --port ${MONGODB_PORT} ${USER_STR}${PASS_STR}${DB_STR}  ${EXTRA_OPTS}"
 
 echo "=> Creating backup script"
 rm -f /backup.sh
@@ -54,6 +67,20 @@ fi
 echo "=> Done"
 EOF
 chmod +x /restore.sh
+
+echo "=> Creating restore_remote script"
+rm -f /restore_remote.sh
+cat <<EOF >> /restore_remote.sh
+#!/bin/bash
+echo "=> Restore database from \$1"
+if mongorestore --host ${MONGODB_HOST_REMOTE} --port ${MONGODB_PORT_REMOTE} ${USER_STR_REMOTE}${PASS_STR_REMOTE}${EXTRA_OPTS_REMOTE} \$1; then
+    echo "   Restore succeeded"
+else
+    echo "   Restore failed"
+fi
+echo "=> Done"
+EOF
+chmod +x /restore_remote.sh
 
 touch /mongo_backup.log
 tail -F /mongo_backup.log &
