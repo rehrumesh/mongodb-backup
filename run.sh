@@ -73,7 +73,7 @@ rm -f /restore_remote.sh
 cat <<EOF >> /restore_remote.sh
 #!/bin/bash
 echo "=> Restore database from \$1"
-if mongorestore --host ${MONGODB_HOST_REMOTE} --port ${MONGODB_PORT_REMOTE} ${USER_STR_REMOTE}${PASS_STR_REMOTE}${EXTRA_OPTS_REMOTE} \$1; then
+if mongorestore --host ${MONGODB_HOST_REMOTE} --port ${MONGODB_PORT_REMOTE} ${USER_STR_REMOTE} ${PASS_STR_REMOTE} ${EXTRA_OPTS_REMOTE} \$1; then
     echo "   Restore succeeded"
 else
     echo "   Restore failed"
