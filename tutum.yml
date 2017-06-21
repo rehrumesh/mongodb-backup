@@ -6,7 +6,7 @@ mongodb:
     - "27017:27017"
     - "28017:28017"
 mongodbbackup:
-  image: 'tutum/mongodb-backup:latest'
+  image: 'rehrumesh/mongodb-backup:latest'
   links:
     - mongodb
   environment:
