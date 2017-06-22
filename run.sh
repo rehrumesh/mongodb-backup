@@ -23,7 +23,7 @@ BACKUP_NAME=\$(date +\%Y.\%m.\%d.\%H\%M\%S)
 
 echo "=> Backup started"
 if ${BACKUP_CMD} ;then
-    zip -r ${BACKUP_NAME}.zip /backup/\${BACKUP_NAME}
+    zip -r \${BACKUP_NAME}.zip /backup/\${BACKUP_NAME}
     echo "   Backup succeeded"
 else
     echo "   Backup failed"
