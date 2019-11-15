@@ -23,7 +23,7 @@ BACKUP_NAME=\$(date +\%Y.\%m.\%d.\%H\%M\%S)
 
 echo "=> Backup started"
 if ${BACKUP_CMD} ;then
-    if zip -r /backup/\${MONGODB_DB}_\${BACKUP_NAME}.zip /backup/\${BACKUP_NAME} ;then
+    if zip -r /backup/${MONGODB_DB}_\${BACKUP_NAME}.zip /backup/\${BACKUP_NAME} ;then
         rm -rf /backup/\${BACKUP_NAME}
         echo "   Backup succeeded"
     fi
